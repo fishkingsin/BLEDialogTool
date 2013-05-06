@@ -114,16 +114,27 @@
                 </Button>
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/services" />
+
             <ListView
                 android:id="@+id/new_service"
                 android:layout_width="wrap_content"
-                android:layout_height="104dp"
-                android:stackFromBottom="true" />
+                android:layout_height="96dp"
+                android:stackFromBottom="true" >
+            </ListView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/characteristics" />
 
             <ListView
                 android:id="@+id/new_characteristic"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="124dp"
                 android:stackFromBottom="true" />
         </LinearLayout>
     </LinearLayout>

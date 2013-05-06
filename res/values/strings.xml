@@ -16,7 +16,7 @@
 -->
 <resources>
 
-    <string name="app_name">LE Monitor</string>
+    <string name="app_name">BLE Dialog Tool</string>
     <string name="device">Device</string>
     <string name="no_device">&lt;Select a device&gt;</string>
     <string name="select_device">Select a device</string>
@@ -60,4 +60,6 @@
     <string name="popup_message">Device Quit , Do you want to quit this Application?</string>
     <string name="popup_yes">YES</string>
     <string name="popup_no">NO</string>
+    <string name="services">Services</string>
+    <string name="characteristics">Characteristics</string>
 </resources>

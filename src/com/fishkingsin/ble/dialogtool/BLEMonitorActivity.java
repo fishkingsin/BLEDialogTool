@@ -59,7 +59,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.util.Log;
 
-public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnCheckedChangeListener {
+public class BLEMonitorActivity extends Activity{
     private static final int REQUEST_SELECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     private static final int STATE_READY = 10;
@@ -68,7 +68,7 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
     private static final int BLE_PROFILE_DISCONNECTED = 21;
     private static final int STATE_OFF = 10;
 
-//    TextView TxPowerValue, mRemoteRssiVal;
+
     private int mState = BLE_PROFILE_DISCONNECTED;
     RadioGroup mRg;
 
@@ -78,7 +78,10 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
     private static int mAlertLevel = BLEService.HIGH_ALERT;
     ListView mServiceList, mCharList;
     ServiceAdapter mServiceAdapter;
+    CharacteristicAdapter mCharacteristicAdapter;
     List<BluetoothGattService> serviceList;
+    List<BluetoothGattCharacteristic> charList;
+    UUID selectedServiceUUID,selectedCharacteristicUUID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +92,7 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             finish();
             return;
         }
-//        TxPowerValue = ((TextView) findViewById(R.id.statusValue1));
+
         init();
         serviceList = new ArrayList<BluetoothGattService>();
         mServiceAdapter = new ServiceAdapter(this,serviceList);
@@ -97,7 +100,13 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
         mServiceList.setAdapter(mServiceAdapter);
         mServiceList.setOnItemClickListener(mServiceClickListener);
         
-//        mCharList = ((ListView) findViewById(R.id.new_characteristic));
+        charList = new ArrayList<BluetoothGattCharacteristic>();
+        
+        mCharacteristicAdapter = new CharacteristicAdapter(this,charList);
+        mCharList = ((ListView) findViewById(R.id.new_characteristic));
+        mCharList.setAdapter(mCharacteristicAdapter);
+        mCharList.setOnItemClickListener(mCharacteristicClickListener);
+        
 
         ((Button) findViewById(R.id.btn_select)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,12 +123,6 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             }
         });
 
-//        ((Button) findViewById(R.id.btn_remove_bond)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.removeBond(mDevice);
-//            }
-//        });
 
         ((Button) findViewById(R.id.btn_connect)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,45 +138,6 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             }
         });
 
-//        ((Button) findViewById(R.id.btn_ias_alert)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.writeIasAlertLevel(mDevice, mAlertLevel);
-//            }
-//        });
-//
-//        ((Button) findViewById(R.id.btn_lls_alert)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.writeLlsAlertLevel(mDevice, mAlertLevel);
-//            }
-//        });
-//
-//        ((Button) findViewById(R.id.btn_write_Tx_Noty)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.enableTxPowerNoti(mDevice);
-//            }
-//        });
-//
-//        ((Button) findViewById(R.id.btn_readrssi)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.readRssi(mDevice);
-//            }
-//        });
-//
-//        mRemoteRssiVal = (TextView) findViewById(R.id.rssival);
-//
-//        ((Button) findViewById(R.id.btn_Txpower)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mService.ReadTxPower(mDevice);
-//            }
-//        });
-//
-//        mRg = (RadioGroup) findViewById(R.id.radioGroup1);
-//        mRg.setOnCheckedChangeListener(this);
 
         // Set initial UI state
         setUiState();
@@ -181,9 +145,11 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
     private OnItemClickListener mServiceClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            BluetoothGattService device = serviceList.get(position);
-            
-            List<BluetoothGattCharacteristic> c = device.getCharacteristics();
+        	BluetoothGattService service = serviceList.get(position);
+        	selectedServiceUUID = service.getUuid();
+            charList.clear();
+        	
+            List<BluetoothGattCharacteristic> c = service.getCharacteristics();
             if(c.size()==0)
             {
             	Log.v(TAG,"No Characteristic in Service !!");
@@ -191,12 +157,27 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             }
             for(int j = 0 ; j < c.size() ; j++)
             {
+            	UUID uuid = c.get(j).getUuid();
+ 				
+                charList.add(c.get(j));
+                mCharacteristicAdapter.notifyDataSetChanged();
             	Log.v(TAG,"getCharacteristic "+j+" "+c.get(j).getUuid());
             }
             return;
 
         }
     };
+    private OnItemClickListener mCharacteristicClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//        	selectedCharacteristicUUID = charList.get(position).getUuid();
+//        	mService.enableWristBandNoti(mDevice, selectedServiceUUID , selectedCharacteristicUUID);
+        	mService.readCharacteristic(  charList.get(position) );
+            return;
+
+        }
+    };
+    
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder rawBinder) {
             mService = ((BLEService.LocalBinder) rawBinder).getService();
@@ -232,8 +213,7 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
                         if(mDevice!=null && mDevice.getAddress().equals(data.getString(BluetoothDevice.EXTRA_DEVICE))){
                             Log.d(TAG, "BLE_DISCONNECT_MSG");
                             mState = BLE_PROFILE_DISCONNECTED;
-                            serviceList.clear();
-                            mServiceAdapter.notifyDataSetChanged();
+                            
                             setUiState();
                         }
                     }
@@ -252,11 +232,27 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
 
             case BLEService.BLE_VALUE_MSG:
                 Log.d(TAG, "BLE_VALUE_MSG");
+                
                 final byte[] value = data.getByteArray(BLEService.EXTRA_VALUE);
+                String _msg = "";
+            	for(int i = 0 ; i < value.length ; i++)
+            	{
+            		_msg += "BLE_VALUE_MSG "+i+" : "+value[i]+"\n";
+            	};
+            	Log.v(TAG, _msg);
+            	AlertDialog.Builder builder = new AlertDialog.Builder(BLEMonitorActivity.this);
+                builder.setMessage(_msg)
+                       .setPositiveButton(R.string.popup_yes, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int id) {
+                               // FIRE ZE MISSILES!
+                           }
+                       });
                 runOnUiThread(new Runnable() {
                     public void run() {
                         try {
-//                            TxPowerValue.setText("" + value[0]);
+                        	
+                        	
+
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
                         }
@@ -461,16 +457,6 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
         }
     }
 
-//    @Override
-//    public void onCheckedChanged(RadioGroup group, int checkedId) {
-//        if (checkedId == R.id.radio0)
-//            mAlertLevel = BLEService.HIGH_ALERT;
-//        else if (checkedId == R.id.radio1)
-//            mAlertLevel = BLEService.LOW_ALERT;
-//        else if (checkedId == R.id.radio2)
-//            mAlertLevel = BLEService.NO_ALERT;
-//    }
-
     private void updateUi() {
         runOnUiThread(new Runnable() {
             @Override
@@ -483,14 +469,8 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
     private void setUiStateForBTOff() {
         Log.d(TAG, "... setUiStateForBTOff.mState" + mState);
         findViewById(R.id.btn_select).setEnabled(true);
-//        findViewById(R.id.btn_ias_alert).setEnabled(false);
-//        findViewById(R.id.btn_lls_alert).setEnabled(false);
         findViewById(R.id.btn_disconnect).setEnabled(false);
         findViewById(R.id.btn_connect).setEnabled(false);
-//        findViewById(R.id.btn_Txpower).setEnabled(false);
-//        findViewById(R.id.btn_write_Tx_Noty).setEnabled(false);
-//        findViewById(R.id.btn_readrssi).setEnabled(false);
-//        findViewById(R.id.btn_remove_bond).setEnabled(false);
 
         if (mDevice != null
                 && mDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
@@ -498,24 +478,16 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             ((TextView) findViewById(R.id.deviceName))
                     .setText(R.string.no_device);
         }
-//        mRemoteRssiVal.setVisibility(View.VISIBLE);
     }
 
     private void setUiState() {
         findViewById(R.id.btn_select).setEnabled(mState == BLE_PROFILE_DISCONNECTED);
         Log.d(TAG, "... setUiState.mState" + mState);
-//        findViewById(R.id.btn_ias_alert).setEnabled(mState == STATE_READY);
-//        findViewById(R.id.btn_lls_alert).setEnabled(mState == STATE_READY);
         findViewById(R.id.btn_disconnect).setEnabled(mState == STATE_READY || mState == BLE_PROFILE_CONNECTED);
         if (mDevice != null) {
             findViewById(R.id.btn_connect).setEnabled(mState == BLE_PROFILE_DISCONNECTED && mDevice.getBondState() == BluetoothDevice.BOND_BONDED);
         }
         else findViewById(R.id.btn_connect).setEnabled(false);
-//        findViewById(R.id.btn_Txpower).setEnabled(mState == STATE_READY);
-//        findViewById(R.id.btn_write_Tx_Noty).setEnabled(mState == STATE_READY);
-//        findViewById(R.id.btn_readrssi).setEnabled(mState == STATE_READY);
-//        findViewById(R.id.btn_remove_bond).setEnabled(
-//                mDevice != null && mDevice.getBondState() == BluetoothDevice.BOND_BONDED);
 
         if (mDevice != null && mDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
             Log.i(TAG, "in no device zone");
@@ -524,7 +496,7 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
         if (mDevice != null && mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
             ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName());
         }
-//        mRemoteRssiVal.setVisibility(View.VISIBLE);
+
         TextView status = ((TextView) findViewById(R.id.statusValue));
 
         switch (mState) {
@@ -532,12 +504,15 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             Log.i(TAG, "STATE_CONNECTED::device name"+mDevice.getName());
             status.setText(R.string.connected);
             ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName());
+            
             break;
         case BLE_PROFILE_DISCONNECTED:
             Log.i(TAG, "disconnected");
             status.setText(R.string.disconnected);
-//            mRemoteRssiVal.setText(R.string.Noupdate);
-//            TxPowerValue.setText(R.string.Noupdate);
+            serviceList.clear();
+            mServiceAdapter.notifyDataSetChanged();
+            charList.clear();
+            mCharacteristicAdapter.notifyDataSetChanged();
             break;
         case STATE_READY:
             status.setText(R.string.ready);
@@ -618,47 +593,58 @@ public class BLEMonitorActivity extends Activity{// implements RadioGroup.OnChec
             BluetoothGattService service = services.get(position);
             
             final TextView tvname = ((TextView) vg.findViewById(R.id.service_name));
-//            final TextView tvpaired = (TextView) vg.findViewById(R.id.paired);
-//            final TextView tvrssi = (TextView) vg.findViewById(R.id.rssi);
+
             tvname.setVisibility(View.VISIBLE);
-//            tvrssi.setVisibility(View.VISIBLE);
-//            byte rssival = (byte) devRssiValues.get(device.getAddress()).intValue();
-//            if (rssival != 0) {
-//                tvrssi.setText("Rssi = " + String.valueOf(rssival));
-//            }
            Log.v("ServiceAdapter ",position+" "+service.getUuid());
             tvname.setText(service.getUuid().toString());
-//            tvadd.setText(service.getAddress());
-//            if (service.getBondState() == BluetoothDevice.BOND_BONDED) {
-//                Log.i(TAG, "device::"+service.getName());
-//                tvname.setTextColor(Color.GRAY);
-//                tvadd.setTextColor(Color.GRAY);
-//                tvpaired.setTextColor(Color.GRAY);
-//                tvpaired.setVisibility(View.VISIBLE);
-//                tvpaired.setText(R.string.paired);
-//                tvrssi.setVisibility(View.GONE);
-//            } else {
-//                tvname.setTextColor(Color.WHITE);
-//                tvadd.setTextColor(Color.WHITE);
-//                tvpaired.setVisibility(View.GONE);
-//                tvrssi.setVisibility(View.VISIBLE);
-//                tvrssi.setTextColor(Color.WHITE);
-//            }
-//            if (mService.mBluetoothGatt.getConnectionState(device) == mService.mBluetoothGatt.STATE_CONNECTED) {
-//                Log.i(TAG, "connected device::"+device.getName());
-//                tvname.setTextColor(Color.WHITE);
-//                tvadd.setTextColor(Color.WHITE);
-//                tvpaired.setVisibility(View.VISIBLE);
-//                tvpaired.setText(R.string.connected);
-//                tvrssi.setVisibility(View.GONE);
-//            } else if (mService.mBluetoothGattServer.getConnectionState(device) == mService.mBluetoothGattServer.STATE_CONNECTED) {
-//                Log.i(TAG, "connected device::gatt server"+device.getName());
-//                tvname.setTextColor(Color.WHITE);
-//                tvadd.setTextColor(Color.WHITE);
-//                tvpaired.setVisibility(View.VISIBLE);
-//                tvpaired.setText(R.string.connected);
-//                tvrssi.setVisibility(View.GONE);
-//            }
+
+            return vg;
+        }
+    }
+    class CharacteristicAdapter extends BaseAdapter {
+        Context context;
+        List<BluetoothGattCharacteristic> characteristices;
+        LayoutInflater inflater;
+
+        public CharacteristicAdapter(Context context, List<BluetoothGattCharacteristic> Characteristic) {
+            this.context = context;
+            inflater = LayoutInflater.from(context);
+            this.characteristices = Characteristic;
+        }
+
+        @Override
+        public int getCount() {
+            return characteristices.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return characteristices.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewGroup vg;
+
+            if (convertView != null) {
+                vg = (ViewGroup) convertView;
+            } else {
+                vg = (ViewGroup) inflater.inflate(R.layout.service_element, null);
+            }
+
+            BluetoothGattCharacteristic c = characteristices.get(position);
+            
+            final TextView tvname = ((TextView) vg.findViewById(R.id.service_name));
+
+            tvname.setVisibility(View.VISIBLE);
+           Log.v("ServiceAdapter ",position+" "+c.getUuid());
+            tvname.setText(c.getUuid().toString());
+
             return vg;
         }
     }

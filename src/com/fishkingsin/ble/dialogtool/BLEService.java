@@ -294,15 +294,14 @@ public class BLEService extends Service {
             Log.d(TAG, "onCharacteristicRead()");
             Log.d(TAG, "characteristic : "+characteristic.getUuid());
             
-            if (TX_POWER_LEVEL_UUID.equals(characteristic.getUuid())) {
+//            if (TX_POWER_LEVEL_UUID.equals(characteristic.getUuid())) {
                 Bundle mBundle = new Bundle();
                 Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
                 mBundle.putByteArray(EXTRA_VALUE, characteristic.getValue());
                 msg.setData(mBundle);
                 msg.sendToTarget();
-            }
+//            }
         }
-
         public void onDescriptorRead(BluetoothGattDescriptor descriptor, int status) {
             Log.i(TAG, "onDescriptorRead");
             BluetoothGattCharacteristic mTxPowerccc = descriptor.getCharacteristic();
@@ -517,6 +516,7 @@ public class BLEService extends Service {
 //        if (Txpowervalue != null)
 //            Log.d(TAG, "level = " + Txpowervalue[0]);
 //    }
+    
 
     public boolean enableNotification(boolean enable, BluetoothGattCharacteristic characteristic) {
         Log.d(TAG, "enableNotification status=" + characteristic);
@@ -628,6 +628,34 @@ public class BLEService extends Service {
             }
         }
 
+    }
+    public void enableWristBandNoti(BluetoothDevice iDevice , UUID serviceUUID, UUID charUUID) {
+        boolean result = false;
+        Log.d(TAG, "enableTxPowerNoti=" + isNoti);
+
+        BluetoothGattService service = mBluetoothGatt.getService(iDevice, UUID.fromString("c231ff01-8d74-4fa9-a7dd-13abdfe5cbff"));
+        if (service == null) {
+            showMessage("Tx power service not found!");
+            return;
+        }
+
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString("c231ff03-8d74-4fa9-a7dd-13abdfe5cbff"));
+        if (characteristic == null) {
+            showMessage("charateristic not found!");
+            return;
+        }
+        //public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+        if (descriptor == null) {
+            Log.e(TAG, "CCC for TX power level charateristic not found!");
+            return;
+        }
+
+        result = mBluetoothGatt.readDescriptor(descriptor);
+        if (result == false) {
+            Log.e(TAG, "readDescriptor() is failed");
+            return;
+        }
     }
 
     public void enableTxPowerNoti(BluetoothDevice iDevice) {
