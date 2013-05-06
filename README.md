@@ -5,7 +5,7 @@ BLEDialogTool
 
 Introduction
 ------------
-
+Android BLE Dialog Tool for Samsung BLE Library
 
 Licence
 -------
