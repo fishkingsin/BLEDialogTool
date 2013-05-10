@@ -62,4 +62,5 @@
     <string name="popup_no">NO</string>
     <string name="services">Services</string>
     <string name="characteristics">Characteristics</string>
+    <string name="readinfo">Read Device Info</string>
 </resources>

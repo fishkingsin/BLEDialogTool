@@ -196,6 +196,7 @@ public class DeviceListActivity extends Activity {
             BluetoothDevice device = deviceList.get(position);
             if (mService.mBluetoothGatt.getConnectionState(device) == mService.mBluetoothGatt.STATE_CONNECTED) {
                 Log.i(TAG, "connected devcie");
+                mService.disconnect(device);
                 showMessage("device already connected");
                 return;
             }
@@ -306,14 +307,15 @@ public class DeviceListActivity extends Activity {
                 tvpaired.setVisibility(View.VISIBLE);
                 tvpaired.setText(R.string.connected);
                 tvrssi.setVisibility(View.GONE);
-            } else if (mService.mBluetoothGattServer.getConnectionState(device) == mService.mBluetoothGattServer.STATE_CONNECTED) {
-                Log.i(TAG, "connected device::gatt server"+device.getName());
-                tvname.setTextColor(Color.WHITE);
-                tvadd.setTextColor(Color.WHITE);
-                tvpaired.setVisibility(View.VISIBLE);
-                tvpaired.setText(R.string.connected);
-                tvrssi.setVisibility(View.GONE);
-            }
+            } 
+//                else if (mService.mBluetoothGattServer.getConnectionState(device) == mService.mBluetoothGattServer.STATE_CONNECTED) {
+//                Log.i(TAG, "connected device::gatt server"+device.getName());
+//                tvname.setTextColor(Color.WHITE);
+//                tvadd.setTextColor(Color.WHITE);
+//                tvpaired.setVisibility(View.VISIBLE);
+//                tvpaired.setText(R.string.connected);
+//                tvrssi.setVisibility(View.GONE);
+//            }
             return vg;
         }
     }
