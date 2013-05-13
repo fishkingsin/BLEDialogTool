@@ -49,7 +49,7 @@ import com.samsung.android.sdk.bt.gatt.MutableBluetoothGattService;
 
 public class BLEService extends Service {
 	//set true to print debug message;
-	static final boolean bDebug = false;
+	static final boolean bDebug = true;
 	
 	static final String TAG = "BLEService";
 	
@@ -195,7 +195,7 @@ public class BLEService extends Service {
 		@Override
 		public void onScanResult(BluetoothDevice device, int rssi,
 				byte[] scanRecord) {
-			if(bDebug)if(bDebug)Log.d(TAG, "onScanResult() - device=" + device + ", rssi=" + rssi);
+//			if(bDebug)Log.d(TAG, "onScanResult() - device=" + device + ", rssi=" + rssi);
 			if (!checkIfBroadcastMode(scanRecord)) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mDeviceListHandler,
@@ -213,7 +213,7 @@ public class BLEService extends Service {
 		@Override
 		public void onConnectionStateChange(BluetoothDevice device, int status,
 				int newState) {
-			if(bDebug)if(bDebug)Log.d(TAG,
+			if(bDebug)Log.d(TAG,
 					" Client onConnectionStateChange (" + device.getAddress()
 							+ ")");
 			// Device has been connected - start service discovery
@@ -245,7 +245,7 @@ public class BLEService extends Service {
 		@Override
 		public void onCharacteristicChanged(
 				BluetoothGattCharacteristic characteristic) {
-			if(bDebug)if(bDebug)Log.d(TAG, "onCharacteristicChanged()");
+			if(bDebug)Log.d(TAG, "onCharacteristicChanged()");
 			
 			String s = "";
 			try {
@@ -275,20 +275,26 @@ public class BLEService extends Service {
 				for (BluetoothGattCharacteristic characteristic : characteristics)
 				{
 					if(bDebug)Log.v(TAG,"Characteristic : "+characteristic.getUuid() );
-					if(characteristic.getUuid().equals(BLEMonitorActivity.PE128_CHAR_STREAMING) )
+//					if(bDebug)Log.v(TAG,"Characteristic getProperties: "+characteristic.getProperties());
+					checkPropertiesTyle(characteristic.getProperties());
+					//if(characteristic.getUuid().equals(BLEMonitorActivity.PE128_CHAR_STREAMING) )
 					{
-						enableNotification(true,
-								characteristic);
+						enableWristBandNoti(device,service.getUuid(),characteristic.getUuid());
+//						if(!enableNotification(true,
+//								characteristic))
+//						{
+//							Log.e(TAG,"enableNotification Failed !!!");
+//						}
 					}
-					else if(characteristic.getUuid().equals(BLEMonitorActivity.PE128_CHAR_RCVD) )
-					{
-						enableNotification(true,
-								characteristic);
-					}
+//					else if(characteristic.getUuid().equals(BLEMonitorActivity.PE128_CHAR_RCVD) )
+//					{
+//						enableNotification(true,
+//								characteristic);
+//					}
 				}
 			}
 			
-			if(bDebug)if(bDebug)Log.d(TAG, "onServicesDcovered()");
+			if(bDebug)Log.d(TAG, "onServicesDcovered()");
 			Message msg = Message.obtain(mActivityHandler,
 					BLE_SERVICE_DISCOVER_MSG);
 			checkGattStatus(status);
@@ -303,7 +309,7 @@ public class BLEService extends Service {
 		@Override
 		public void onCharacteristicWrite(
 				BluetoothGattCharacteristic characteristic, int status) {
-			if(bDebug)if(bDebug)Log.d(TAG, "onCharacteristicWrite()");
+			if(bDebug)Log.d(TAG, "onCharacteristicWrite()");
 			checkGattStatus(status);
 		}
 
@@ -311,7 +317,7 @@ public class BLEService extends Service {
 		public void onCharacteristicRead(
 				BluetoothGattCharacteristic characteristic, int status) {
 			UUID charUuid = characteristic.getUuid();
-			if(bDebug)if(bDebug)Log.d(TAG, "onCharacteristicRead()");
+			if(bDebug)Log.d(TAG, "onCharacteristicRead()");
 			checkGattStatus(status);
 			Bundle mBundle = new Bundle();
 			Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
@@ -472,33 +478,25 @@ public class BLEService extends Service {
 
 	public boolean enableNotification(boolean enable,
 			BluetoothGattCharacteristic characteristic) {
-		if(bDebug)Log.d(TAG, "enableNotification status=" + characteristic);
 
-		if (mBluetoothGatt == null)
-			return false;
-		if (!mBluetoothGatt.setCharacteristicNotification(characteristic,
-				enable))
-			return false;
+        if (mBluetoothGatt == null)
+            return false;
+        if (!mBluetoothGatt.setCharacteristicNotification(characteristic, enable))
+            return false;
 
-		BluetoothGattDescriptor clientConfig = (BluetoothGattDescriptor) characteristic
-				.getDescriptor(CCC);
-		if (clientConfig == null) {
-			Log.v(TAG, "clientConfig = NULL");
-			return false;
-		} else {
-			Log.v(TAG, "clientConfig = " + clientConfig.getUuid());
-		}
+        BluetoothGattDescriptor clientConfig = characteristic.getDescriptor(CCC);
+        if (clientConfig == null)
+            return false;
 
-		if (enable) {
-			isNoti = enable;
-			clientConfig
-					.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-		} else {
-			isNoti = enable;
-			clientConfig
-					.setValue(new byte[] {0x00, 0x00});
-		}
-		return mBluetoothGatt.writeDescriptor(clientConfig);
+        if (enable) {
+             Log.i(TAG,"enable notification");
+            clientConfig.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        } else {
+            Log.i(TAG,"disable notification");
+            clientConfig.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+        }
+        return mBluetoothGatt.writeDescriptor(clientConfig);
+    
 
 	}
 
@@ -598,7 +596,7 @@ public class BLEService extends Service {
 		BluetoothGattService service = mBluetoothGatt.getService(iDevice,
 				serviceUUID);
 		if (service == null) {
-			showMessage("WristBand service not found!");
+			showMessage("WristBand service not )found!");
 			return;
 		}
 		BluetoothGattCharacteristic characteristic = service
@@ -612,8 +610,8 @@ public class BLEService extends Service {
 		if(bDebug)Log.d(TAG, "WriteWristBand storedLevel=" + storedLevel);
 
 		characteristic.setValue(data);
-		characteristic
-				.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+		
+		characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
 		status = mBluetoothGatt.writeCharacteristic(characteristic);
 		if(bDebug)Log.d(TAG, "WriteWristBand - status = " + status);
 	}
@@ -636,8 +634,7 @@ public class BLEService extends Service {
 			showMessage("charateristic not found!");
 			return;
 		}
-		BluetoothGattDescriptor descriptor = (BluetoothGattDescriptor) characteristic
-				.getDescriptor	(CCC);
+		BluetoothGattDescriptor descriptor = (BluetoothGattDescriptor) characteristic.getDescriptor(CCC);
 		if (descriptor == null) {
 			Log.e(TAG, "CCC for charateristic not found!");
 			return;
@@ -663,6 +660,97 @@ public class BLEService extends Service {
 		return result;
 	}
 
+	void checkPropertiesTyle(int properties) {
+		switch (properties) {
+//		case BluetoothGattCharacteristic.FORMAT_FLOAT:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_FLOAT");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_SFLOAT:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_SFLOAT");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_SINT16:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_SINT16");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_SINT32:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_SINT32");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_SINT8:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_SINT8");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_UINT16:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_UINT16");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_UINT32:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_UINT32");
+//			break;
+//		case BluetoothGattCharacteristic.FORMAT_UINT8:
+//			Log.v(TAG, "BluetoothGattCharacteristic.FORMAT_UINT8");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_NOT_DETERMINED:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_NOT_DETERMINED");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_READ:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_READ");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED_MITM:
+//			Log.v(TAG,
+//					"BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED_MITM");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_WRITE:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_WRITE");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM:
+//			Log.v(TAG,
+//					"BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED:
+//			Log.v(TAG, "BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED");
+//			break;
+//		case BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED_MITM:
+//			Log.v(TAG,
+//					"BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED_MITM");
+//			break;
+		case BluetoothGattCharacteristic.PROPERTY_BROADCAST:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_BROADCAST");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_INDICATE:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_INDICATE");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_NOTIFY:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_READ:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_WRITE:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE");
+			break;
+		case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
+			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE");
+			break;
+//		case BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT:
+//			Log.v(TAG, "BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT");
+//			break;
+//		case BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE:
+//			Log.v(TAG, "BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE");
+//			break;
+//		case BluetoothGattCharacteristic.WRITE_TYPE_SIGNED:
+//			Log.v(TAG, "BluetoothGattCharacteristic.WRITE_TYPE_SIGNED");
+//			break;
+		}
+	}
 	void checkGattStatus(int status) {
 		switch (status) {
 		case BluetoothGatt.GATT_ALREADY_OPEN:

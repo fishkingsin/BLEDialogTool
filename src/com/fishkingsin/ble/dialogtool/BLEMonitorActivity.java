@@ -225,20 +225,14 @@ public class BLEMonitorActivity extends Activity {
 						0);
 
 			} else if (selectedCharacteristicUUID.equals(PE128_CHAR_RCVD)) {
-//				mService.enableNotification(true,
-//						charList.get(position));
-//				mService.enableWristBandNoti(mDevice,
-//						 selectedServiceUUID,PE128_CHAR_RCVD);
-				mService.ReadWristBand(mDevice,
-						 selectedServiceUUID,PE128_CHAR_RCVD);
+				mService.enableWristBandNoti(mDevice,
+						 selectedServiceUUID,selectedCharacteristicUUID);
 			} 
 			else if (selectedCharacteristicUUID.equals(PE128_CHAR_STREAMING)) {
-//				mService.enableNotification(true,
-//						charList.get(position));
-//				mService.enableWristBandNoti(mDevice,
-//						 selectedServiceUUID,PE128_CHAR_STREAMING);
-				mService.ReadWristBand(mDevice,
-						 selectedServiceUUID,PE128_CHAR_STREAMING);
+
+				mService.enableWristBandNoti(mDevice,
+						 selectedServiceUUID,selectedCharacteristicUUID);
+				
 			}
 			else
 			{
@@ -576,6 +570,21 @@ public class BLEMonitorActivity extends Activity {
 						&& selectedCharacteristicUUID != null) {
 					mService.WriteWristBand(mDevice, selectedServiceUUID,
 							selectedCharacteristicUUID, d);
+//					List<BluetoothGattService > services = serviceList;
+//					for (BluetoothGattService service : services)
+//					{
+//						List<BluetoothGattCharacteristic>  characteristics = service.getCharacteristics();
+//						for (BluetoothGattCharacteristic characteristic : characteristics)
+//						{
+//							characteristic.setValue(d);
+//							
+//							characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE );
+//							if(! mService.mBluetoothGatt.writeCharacteristic(characteristic))
+//							{
+//								Log.v(TAG,"Failed "+characteristic.getUuid());
+//							}
+//						}
+//					}
 				}
 			}
 			break;
