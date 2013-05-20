@@ -2,3 +2,13 @@
 build.properties
 
 BLEDialogTool.iml
+
+gen/com/fishkingsin/ble/dialogtool/R.java
+
+bin/resources.ap_
+
+bin/classes.dex
+
+bin/BLEDialogTool.apk
+
+bin/BLEDialogTool.apk
