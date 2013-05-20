@@ -15,137 +15,137 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical" >
+                android:id="@+id/linearLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
             <TextView
-                android:id="@+id/deviceLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/device" >
+                    android:id="@+id/deviceLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/device">
             </TextView>
 
             <TextView
-                android:id="@+id/deviceName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_device"
-                android:textAppearance="?android:attr/textAppearanceMedium" >
+                    android:id="@+id/deviceName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_device"
+                    android:textAppearance="?android:attr/textAppearanceMedium">
             </TextView>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical" >
+                android:id="@+id/linearLayout12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
 
             <TextView
-                android:id="@+id/statusLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/status" >
+                    android:id="@+id/statusLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status">
             </TextView>
 
             <TextView
-                android:id="@+id/statusValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/disconnected"
-                android:textAppearance="?android:attr/textAppearanceMedium" >
+                    android:id="@+id/statusValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/disconnected"
+                    android:textAppearance="?android:attr/textAppearanceMedium">
             </TextView>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:text="@string/select_device" >
+                    android:id="@+id/btn_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:text="@string/select_device">
             </Button>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <LinearLayout
-                android:id="@+id/linearLayout4"
+                android:id="@+id/linearLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="vertical">
+
+            <LinearLayout
+                    android:id="@+id/linearLayout4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn_disconnect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:text="@string/disconnect" />
+                        android:id="@+id/btn_disconnect"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:text="@string/disconnect"/>
 
                 <Button
-                    android:id="@+id/btn_connect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:text="@string/connect" >
+                        android:id="@+id/btn_connect"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:text="@string/connect">
                 </Button>
                 <Button
-                    android:id="@+id/btn_readinfo"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:padding="12dp"
-                    android:text="@string/readinfo" >
+                        android:id="@+id/btn_readinfo"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:padding="12dp"
+                        android:text="@string/readinfo">
                 </Button>
-                
+
             </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/services" 
-                android:text="@string/services"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/services"
+                    android:text="@string/services"/>
 
             <ListView
-                android:id="@+id/new_service"
-                android:layout_width="wrap_content"
-                android:layout_height="96dp"
-                android:stackFromBottom="true" >
+                    android:id="@+id/new_service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="96dp"
+                    android:stackFromBottom="true">
             </ListView>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/characteristics" 
-                android:text="@string/characteristics"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/characteristics"
+                    android:text="@string/characteristics"/>
 
             <ListView
-                android:id="@+id/new_characteristic"
-                android:layout_width="wrap_content"
-                android:layout_height="124dp"
-                android:stackFromBottom="true" />
+                    android:id="@+id/new_characteristic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="124dp"
+                    android:stackFromBottom="true"/>
         </LinearLayout>
     </LinearLayout>
 

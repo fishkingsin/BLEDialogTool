@@ -43,11 +43,11 @@
     <string name="SoftwareRevision">SoftwareRevision</string>
     <string name="ManufactureName">ManufactureName</string>
     <string name="RegCertDataList">RegCertDataList</string>
-    <string name="ManufactureId">    ManufactureId</string>
-    <string name="BatteryLevel">    Battery Level</string>
-    <string name="OrgId">    OrganizationId</string>
-    <string name="Txpower">    Txpower Level</string>
-    <string name="Noupdate">    No Update</string>
+    <string name="ManufactureId">ManufactureId</string>
+    <string name="BatteryLevel">Battery Level</string>
+    <string name="OrgId">OrganizationId</string>
+    <string name="Txpower">Txpower Level</string>
+    <string name="Noupdate">No Update</string>
     <string name="ReadTxPower">ReadTxPower</string>
     <string name="high_alert">HIGH Alert triggered!</string>
     <string name="low_alert">LOW Alert triggered!</string>
@@ -63,4 +63,7 @@
     <string name="services">Services</string>
     <string name="characteristics">Characteristics</string>
     <string name="readinfo">Read Device Info</string>
+    <string name="write">Write</string>
+    <string name="read">Read</string>
+    <string name="enable_notify">Enable Notify</string>
 </resources>

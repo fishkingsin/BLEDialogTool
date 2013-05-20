@@ -16,23 +16,10 @@
 
 package com.fishkingsin.ble.dialogtool;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.content.*;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,13 +31,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.*;
 
 public class DeviceListActivity extends Activity {
     private BluetoothAdapter mBtAdapter;
@@ -66,20 +50,20 @@ public class DeviceListActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-            // Gatt device found message.
-            case BLEService.GATT_DEVICE_FOUND_MSG:
-                Bundle data = msg.getData();
-                final BluetoothDevice device = data.getParcelable(BluetoothDevice.EXTRA_DEVICE);
-                final int rssi = data.getInt(BLEService.EXTRA_RSSI);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addDevice(device, rssi);
-                    }
-                });
-                break;
-            default:
-                super.handleMessage(msg);
+                // Gatt device found message.
+                case BLEService.GATT_DEVICE_FOUND_MSG:
+                    Bundle data = msg.getData();
+                    final BluetoothDevice device = data.getParcelable(BluetoothDevice.EXTRA_DEVICE);
+                    final int rssi = data.getInt(BLEService.EXTRA_RSSI);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addDevice(device, rssi);
+                        }
+                    });
+                    break;
+                default:
+                    super.handleMessage(msg);
             }
         }
     };
@@ -286,7 +270,7 @@ public class DeviceListActivity extends Activity {
             tvname.setText(device.getName());
             tvadd.setText(device.getAddress());
             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                Log.i(TAG, "device::"+device.getName());
+                Log.i(TAG, "device::" + device.getName());
                 tvname.setTextColor(Color.GRAY);
                 tvadd.setTextColor(Color.GRAY);
                 tvpaired.setTextColor(Color.GRAY);
@@ -301,13 +285,13 @@ public class DeviceListActivity extends Activity {
                 tvrssi.setTextColor(Color.WHITE);
             }
             if (mService.mBluetoothGatt.getConnectionState(device) == mService.mBluetoothGatt.STATE_CONNECTED) {
-                Log.i(TAG, "connected device::"+device.getName());
+                Log.i(TAG, "connected device::" + device.getName());
                 tvname.setTextColor(Color.WHITE);
                 tvadd.setTextColor(Color.WHITE);
                 tvpaired.setVisibility(View.VISIBLE);
                 tvpaired.setText(R.string.connected);
                 tvrssi.setVisibility(View.GONE);
-            } 
+            }
 //                else if (mService.mBluetoothGattServer.getConnectionState(device) == mService.mBluetoothGattServer.STATE_CONNECTED) {
 //                Log.i(TAG, "connected device::gatt server"+device.getName());
 //                tvname.setTextColor(Color.WHITE);
@@ -319,6 +303,7 @@ public class DeviceListActivity extends Activity {
             return vg;
         }
     }
+
     private void showMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
