@@ -36,6 +36,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.*;
 
+
 public class DeviceListActivity extends Activity {
     private BluetoothAdapter mBtAdapter;
     private TextView mEmptyList;
